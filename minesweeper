@@ -1,0 +1,43 @@
+
+import System.Random
+
+lenght :: Int
+lenght = 6
+heigth :: Int
+heigth = lenght
+
+minetablesize = lenght*lenght
+mine = 1
+nothing = 0
+
+
+main = do 
+   rndmmine <- getStdGen
+   let mineseeper = minedistirbutor lenght heigth rndmmine
+   putStrLn "Mine board generated"
+
+difficulty::Int
+difficulty = 0
+
+askdiff = do
+   putStrLn "Please choose difficulty. \nEasy pizzy = 1\nMedium = 2\nHard = 3\nHardcore = 4"
+   diffsetter <- getLine 
+   rndmmine <- getStdGen
+   if (1 `elem` diffsetter) 
+     then do (take minetablesize) (randomRs (0::Int, 10::Int) rndmmine)
+             putStrLn "Difficulty set to easy pizzy!"  
+   else if (2 `elem` diffsetter)
+       then do (take minetablesize) (randomRs (0::Int, 6::Int)  rndmmine)
+               putStrLn "Difficulty set to medium!"  
+   else if (3 `elem` diffsetter) 
+       then do (take minetablesize) (randomRs (0::Int, 4::Int)  rndmmine)
+               putStrLn "Difficulty set to hard!"  
+   else if (4 `elem` diffsetter) 
+       then do (take minetablesize) (randomRs (0::Int, 2::Int)  rndmmine)
+               putStrLn "Difficulty set to hardcore!";
+               
+minedistirbutor :: RandomGen a => Int -> Int -> a -> [[Int]];
+minedistirbutor length heigth rndmmine = matrix length heigth (minegen length heigth rndmmine)
+  where
+   minegen length heigth rndmmine = [if x == 0 then mine else nothing | x<- rndmmine]
+   matrix length heigth newlst = [[newlst!!((heigth * i) + j) | j <- [0.. length-1]] | i <- [0..heigth-1]]
