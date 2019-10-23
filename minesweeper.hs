@@ -27,7 +27,7 @@ main = do --program opener
    newgame_ask --asks if it is a new game 
    putStrLn "Please select a difficulty. \nEasy pizzy = 1\nMedium = 2\nHard = 3\nHardcore = 4"--selection of game difficulty
    diffsetter <- getLine 
-   mined_table <- if ("1" == diffsetter) 
+   mined_table <- if ("1" == diffsetter) --registering the table generated to mined_table
        then do   
              rndmmine <- getStdGen
              let table = minedistirbutor 6 6 10 rndmmine--board generator 
@@ -68,7 +68,7 @@ printtable table = putStrLn (show table) --board print function
 newgame_ask = do --new game asker 
   putStrLn "Do you want to start a new game?"
   is_it_new<- getLine 
-  newgame <- if  ("yes" == is_it_new)
+  newgame <- if  ("yes" == is_it_new) --registering the input to newgame
     then do
      let newgame = True
      return newgame
