@@ -48,9 +48,9 @@ bombCleared = 5         -- mine, cleared (loss condition)
 
 minesweeper :: Game
 minesweeper (UserAction (x,y,c)) (State (grid))
-    | to_replace == bombCleared                 = EndOfGame 0 (State new_grid)   -- did we lose?
-    | win new_grid                              = EndOfGame 1 (State new_grid)   -- did we win?
-    | otherwise                                 = if boolToExplode then ContinueGame (State (explode new_grid (x,y))) else ContinueGame (State new_grid)
+    | newValue == bombCleared                 = EndOfGame 0 (State newGrid)   -- did we lose?
+    | win newGrid                              = EndOfGame 1 (State newGrid)   -- did we win?
+    | otherwise                                 = if boolToExplode then ContinueGame (State (explode newGrid (x,y))) else ContinueGame (State newGrid)
         where
             init = find grid x y
             -- https://github.com/unoctium1/HaskellMinesweeper/blob/master/src/Minesweeper.hs
@@ -81,15 +81,16 @@ makeRow 0 = []
 makeRow x = 0 : makeRow (x-1)
 
 -- given the length height and difficulty and # of mines, the functions returns a grid
-mineDistributor :: Int -> Int -> Int -> InternalState -> InternalState
-mineDistributor length height 0 grid = grid
+-- mineDistributor :: Int -> Int -> Int -> InternalState -> InternalState
+mineDistributor length height 0 grid = do 
+    return grid
 mineDistributor length height mines grid =
       do 
             rg <- newStdGen
-            let randomX = head(randomRs (1,gridSize) rg)
+            let randomX = head(randomRs (1::Int,length*height::Int) rg)
             rg2 <- newStdGen
-            let randomY = head(randomRs (1,gridSize) rg2)
-            if (hasBomb randomX randomY grid)
+            let randomY = head(randomRs (1::Int,length*height::Int) rg2)
+            if (hasBomb grid randomX randomY)
                   then mineDistributor length height mines grid
                   else mineDistributor length height (mines - 1) (updateGrid grid randomX randomY 1) 
 
@@ -97,17 +98,17 @@ mineDistributor length height mines grid =
 -- true if there is no mines or emptyflags on the grid
 win :: [[Int]] -> Bool
 win [] = True
-win (h:r) = 
-      | (elem mine h || elem emptyFlagged h) = False
+win (h:r) 
+      | elem mine h || elem emptyFlagged h = False
       | otherwise = True && win r
 
 -- given coordinate x,y, the function replace the value with given c value
 updateGrid :: [[Int]] -> Int -> Int -> Int -> [[Int]]
-updateGrid (h:r) x y c =
+updateGrid (h:r) x y c 
       | y == 1 = updateRow h x c : r   
       | otherwise = h : updateGrid r x (y - 1) c
 
-updateRow (h:r) x c =
+updateRow (h:r) x c 
       | x == 1 = c : r
       | otherwise = h : updateRow r (x - 1) c
 
@@ -176,8 +177,8 @@ explode (first:rest) (x, y) =
 
 explodehelper st [] = st
 explodehelper st ((x,y):rst)
-    | countbombs st (x,y) == 0      =   explodehelper (explode (find_replace st x y emptyCleared) (x,y)) rst
-    | otherwise                     =   explodehelper (find_replace st x y emptyCleared) rst
+    | countbombs st (x,y) == 0      =   explodehelper (explode (updateGrid st x y emptyCleared) (x,y)) rst
+    | otherwise                     =   explodehelper (updateGrid st x y emptyCleared) rst
 
 -- Given an (x,y) coordinate, returns the number of bombs at the space
 -- Returns true if no spaces are emptyFlagged or mines
