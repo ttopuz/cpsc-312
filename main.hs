@@ -3,6 +3,7 @@ module Main(main) where
     import Minesweeper
     import System.Random
     import Text.Read
+    import System.Maybe
     
     main :: IO()
     main = do
@@ -11,46 +12,48 @@ module Main(main) where
        (diff, size) <- dif_ask
        playInit diff size
     
+
+    --main game loop for minesweeper, it takes difficulty, size and inputs from the user
+    --this functions initiates the loop
     playInit diff size = do
-        UserAction (x,y,c) = readUA
-        grid <- makeDistributor size size diff 20
+        let UserAction (x,y,c) = readUA size
+        grid <- makeGrid size size diff 20
         case c of
             LeftClick -> putStrLn ("Checking for a mine at " ++ show x ++ " and " ++ show y)
             RightClick -> putStrLn ("Flagging space at " ++ show x ++ " and " ++ show y)
         let res = minesweeper (UserAction (x,y,c)) grid
         case res of
-        EndOfGame val st -> (playAgain st val)
+        EndOfGame val st -> putStrLn("End of game")
         ContinueGame st -> (play st diff size)
 
+    --Main loop for the game, and returns at the end of the game 
     play grid diff size = do
         printGrid grid
-        UserAction (x,y,c) = readUA size
-        grid <- makeDistributor size size diff 20
+        let UserAction (x,y,c) = readUA size
+        grid <- makeGrid size size diff 20
         case c of
             LeftClick -> putStrLn ("Checking for a mine at " ++ show x ++ " and " ++ show y)
             RightClick -> putStrLn ("Flagging space at " ++ show x ++ " and " ++ show y)
         let res = minesweeper (UserAction (x,y,c)) grid
         case res of
-        EndOfGame val st -> (playAgain st val)
+        EndOfGame val st ->  putStrLn("End of game")
         ContinueGame st -> (play st diff size)
     
-
-    playAgain grid val = do
-    printGrid grid
-    case val of
-        1 -> putStrLn ("You win!")
-        0 -> putStrLn ("You lose!")
+    --shows the result 
+    --playAgain grid val = do
+    --printGrid grid
+    --case val of
+     --   1 -> putStrLn ("You win!")
+       -- 0 -> putStrLn ("You lose!")
     
+    --takes the difficulty of the game, and adjust size accordingly
     dif_ask = do
         putStrLn "Please select a difficulty. \nEasy pizzy = 1\nMedium = 2\nHard = 3\nHardcore = 4"
         diffsetter <- getLine 
-        case diffsetter of
-            1 -> size = 9
-            2 -> size = 8
-            3 -> size = 7
-            4 -> size = 6
+        let size = diffsetter
         return (diffsetter, size)
     
+    --gets the inputs from the user, x ,y cordinate and c value which is right click/left click
      -- talen from https://github.com/unoctium1/HaskellMinesweeper/blob/master/src/Minesweeper.hs
     readUA :: Int -> IO UserAction
     readUA size =
