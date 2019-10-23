@@ -32,6 +32,7 @@ main = do --program opener
              rndmmine <- getStdGen
              let table = minedistirbutor 6 6 10 rndmmine--board generator 
              let interfacetable = usertable 6 6 0 rndmmine--empty board generator for the player 
+             printtable interfacetable
              putStrLn "Difficulty set to easy pizzy!"  
 
        else if ("2" == diffsetter)
@@ -39,6 +40,7 @@ main = do --program opener
              rndmmine <- getStdGen
              let table = minedistirbutor 6 6 6 rndmmine
              let interfacetable = usertable 6 6 0 rndmmine
+             printtable interfacetable
              putStrLn "Difficulty set to medium!"  
 
        else if ("3" == diffsetter) 
@@ -46,6 +48,7 @@ main = do --program opener
              rndmmine <- getStdGen
              let table = minedistirbutor 6 6 4 rndmmine
              let interfacetable = usertable 6 6 0 rndmmine
+             printtable interfacetable
              putStrLn "Difficulty set to hard!"  
              
        else  do
